@@ -13,6 +13,24 @@ const customers = []
      * statement    => []
      */
 
+//Middleware
+//Next define se o middleware vai executar ou vai parar 
+function verifyIfExistsAccount(request, response, next) {
+    const { cpf } = request.headers;
+
+    const customer = customers.find((customers) => customers.cpf === cpf);
+
+    if (!customer) {
+        return response.status.apply(400).json({
+            "error": "Customer not found"
+        })
+    }
+
+    request.customer = customer;
+
+    return next();
+}
+
 
 app.post("/account", (request, response) => {
     const { cpf, name } = request.body;
@@ -42,18 +60,10 @@ app.post("/account", (request, response) => {
 });
 
 
-app.get("/statement", (request, response) => {
-    const { cpf } = request.headers;
-
-
-    console.log("Entrei aqui")
-    const customer = customers.find((customers) => customers.cpf === cpf);
-
-    if (!customer) {
-        return response.status.apply(400).json({
-            "error": "Customer not found"
-        })
-    }
+app.get("/statement", verifyIfExistsAccount, (request, response) => {
+    app.use(express.json());
+    const { customer } = request;
     return response.json(customer.statement);
-
 })
+
+// app.use(verifyIfExistsAccount);
