@@ -38,4 +38,22 @@ app.post("/account", (request, response) => {
     });
 
     return response.status(201).send();
+
+});
+
+
+app.get("/statement", (request, response) => {
+    const { cpf } = request.headers;
+
+
+    console.log("Entrei aqui")
+    const customer = customers.find((customers) => customers.cpf === cpf);
+
+    if (!customer) {
+        return response.status.apply(400).json({
+            "error": "Customer not found"
+        })
+    }
+    return response.json(customer.statement);
+
 })
