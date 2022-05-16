@@ -1,3 +1,4 @@
+const { request } = require("express");
 const express = require("express");
 const { v4: uuidv4 } = require("uuid") // v4 gera um número randomico 
 
@@ -64,6 +65,24 @@ app.get("/statement", verifyIfExistsAccount, (request, response) => {
     app.use(express.json());
     const { customer } = request;
     return response.json(customer.statement);
+})
+
+
+app.post("/deposit", verifyIfExistsAccount, (request, response) => {
+    const { description, amount } = request.body;
+
+    const { customer } = request;
+
+    const statementOperation = {
+        description,
+        amount,
+        created_at: new Date(),
+        type: "credit"
+    }
+
+    customer.statement.push(statementOperation);
+
+    return response.status(201).send();
 })
 
 // app.use(verifyIfExistsAccount);
