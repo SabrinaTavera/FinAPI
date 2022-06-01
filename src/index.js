@@ -20,8 +20,10 @@ const customers = []
 function verifyIfExistsAccount(request, response, next) {
     const { cpf } = request.headers;
 
+
     const customer = customers.find((customers) => customers.cpf === cpf);
 
+    console.log(customer)
     if (!customer) {
         return response.status.apply(400).json({
             "error": "Customer not found"
@@ -122,5 +124,43 @@ app.post("/withdraw", verifyIfExistsAccount, (request, response) => {
     return response.status(201).send();
 
 })
+
+app.get("/statement/date", verifyIfExistsAccount, (request, response) => {
+
+
+    const { customer } = request;
+    const { date } = request.query;
+
+
+    const dateFormat = new Date(date + " 00:00");
+
+    const statement = customer.statement.filter((statement) => statement.created_at.toDateString() === new Date(dateFormat).toDateString())
+
+    console.log("valor do consele " + statement)
+
+    return response.json(statement);
+})
+
+
+app.put("/account", verifyIfExistsAccount, (request, response) => {
+    const { name } = request.body;
+    const { customer } = request;
+
+    customer.name = name;
+
+    return response.status(201).send()
+
+
+})
+
+app.get("/account", verifyIfExistsAccount, (request, response) => {
+    const { customer } = request;
+
+    console.log(customer)
+    return response.json(customer)
+})
+
+
+
 
 // app.use(verifyIfExistsAccount);
