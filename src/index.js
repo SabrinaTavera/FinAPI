@@ -25,7 +25,7 @@ function verifyIfExistsAccount(request, response, next) {
 
     console.log(customer)
     if (!customer) {
-        return response.status.apply(400).json({
+        return response.status(400).json({
             "error": "Customer not found"
         })
     }
@@ -158,6 +158,16 @@ app.get("/account", verifyIfExistsAccount, (request, response) => {
 
     console.log(customer)
     return response.json(customer)
+})
+
+app.delete("/account", verifyIfExistsAccount, (request, response) => {
+    const { customer } = request;
+
+    console.log(request)
+        //splice
+    customers.splice(customer, 1)
+
+    return response.status(200).json(customers)
 })
 
 
